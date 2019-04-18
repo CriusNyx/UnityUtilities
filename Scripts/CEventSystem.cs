@@ -123,11 +123,15 @@ public enum EventChannel
 {
     none,
     input,
+    randomEvents
+}
+
+public enum EventInputChannel
+{
     player1,
     player2,
     player3,
     player4,
-    randomEvents
 }
 
 public abstract class CEvent
