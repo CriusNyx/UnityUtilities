@@ -126,7 +126,7 @@ public enum EventChannel
     randomEvents
 }
 
-public enum EventInputChannel
+public enum EventPlayerNumberChannel
 {
     player1,
     player2,
