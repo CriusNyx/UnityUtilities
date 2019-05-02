@@ -31,4 +31,9 @@ public class Thunk<T>
     {
         return thunk.Value;
     }
+
+    public static implicit operator Thunk<T>(Func<T> func)
+    {
+        return new Thunk<T>(func);
+    }
 }
