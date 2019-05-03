@@ -4,73 +4,76 @@ using UnityEngine;
 using UnityEditor;
 using System.Linq;
 
-[CustomEditor(typeof(CEventSystem))]
-public class EventSystemInspector : Editor
+namespace UnityUtilities
 {
-    bool showListeners = false;
-    bool showBroadcastRecords = false;
-    bool repaint = true;
-
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(CEventSystem))]
+    public class EventSystemInspector : Editor
     {
-        DrawDefaultInspector();
+        bool showListeners = false;
+        bool showBroadcastRecords = false;
+        bool repaint = true;
 
-        showListeners = GUILayout.Toggle(showListeners, "Show Listeners", "Button");
-        if(showListeners)
+        public override void OnInspectorGUI()
         {
-            var listeners = CEventSystem.GetEventListeners();
-            if(listeners != null)
+            DrawDefaultInspector();
+
+            showListeners = GUILayout.Toggle(showListeners, "Show Listeners", "Button");
+            if (showListeners)
             {
-                GUILayout.Label("Event Listeners");
-                foreach(var dic in listeners)
+                var listeners = CEventSystem.GetEventListeners();
+                if (listeners != null)
                 {
-                    GUILayout.Label("\t" + dic.Key.ToString());
-                    foreach(var dic2 in dic.Value)
+                    GUILayout.Label("Event Listeners");
+                    foreach (var dic in listeners)
                     {
-                        GUILayout.Label("\t\t" + dic2.Key.ToString());
-                        foreach(var listener in dic2.Value)
+                        GUILayout.Label("\t" + dic.Key.ToString());
+                        foreach (var dic2 in dic.Value)
                         {
-                            GUILayout.Label("\t\t\t" + listener.ToString());
+                            GUILayout.Label("\t\t" + dic2.Key.ToString());
+                            foreach (var listener in dic2.Value)
+                            {
+                                GUILayout.Label("\t\t\t" + listener.ToString());
+                            }
                         }
                     }
                 }
-            }
-            else
-            {
-                GUILayout.Label("CEventSystem returned a null list");
-            }
-        }
-
-        showBroadcastRecords = GUILayout.Toggle(showBroadcastRecords, "Show Events", "Button");
-        if(showBroadcastRecords)
-        {
-            GUILayout.BeginHorizontal();
-            {
-                CEventSystem.maxQueueLength = EditorGUILayout.IntField(CEventSystem.maxQueueLength);
-                CEventSystem.maxQueueLength = Mathf.Max(120, CEventSystem.maxQueueLength);
-            }
-            GUILayout.EndHorizontal();
-
-            var events = CEventSystem.GetBroadcastList();
-            events = events.Reverse();
-            if(events != null)
-            {
-                GUILayout.Label("Boradcast Records");
-                foreach(var e in events)
+                else
                 {
-                    GUILayout.Label("\t" + e.ToString());
+                    GUILayout.Label("CEventSystem returned a null list");
                 }
             }
-            else
-            {
-                GUILayout.Label("CEventSystem returned a null list");
-            }
-        }
 
-        repaint = GUILayout.Toggle(repaint, "Repaint", "Button");
-        if(repaint)
-        {
-            Repaint();
+            showBroadcastRecords = GUILayout.Toggle(showBroadcastRecords, "Show Events", "Button");
+            if (showBroadcastRecords)
+            {
+                GUILayout.BeginHorizontal();
+                {
+                    CEventSystem.maxQueueLength = EditorGUILayout.IntField(CEventSystem.maxQueueLength);
+                    CEventSystem.maxQueueLength = Mathf.Max(120, CEventSystem.maxQueueLength);
+                }
+                GUILayout.EndHorizontal();
+
+                var events = CEventSystem.GetBroadcastList();
+                events = events.Reverse();
+                if (events != null)
+                {
+                    GUILayout.Label("Boradcast Records");
+                    foreach (var e in events)
+                    {
+                        GUILayout.Label("\t" + e.ToString());
+                    }
+                }
+                else
+                {
+                    GUILayout.Label("CEventSystem returned a null list");
+                }
+            }
+
+            repaint = GUILayout.Toggle(repaint, "Repaint", "Button");
+            if (repaint)
+            {
+                Repaint();
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Reflection;
 using System.IO;
+using UnityUtilities;
 
 namespace SceneInitializerGenerator
 {
@@ -13,6 +14,7 @@ namespace SceneInitializerGenerator
         public const string CLASS_TEMPLATE =
     @"#region Using Statements
 using UnityEngine;
+using UnityUtilities.ExecutionOrder.ExecutionOrderControl;
 {0}
 #endregion
 

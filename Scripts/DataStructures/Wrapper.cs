@@ -4,31 +4,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public interface IReadOnlyWrapper<T>
+namespace UnityUtilities.DataStructures
 {
-    T Get();
-}
-
-public interface IWrapper<T> : IReadOnlyWrapper<T>
-{
-    T Value { get; set; }
-}
-
-public class Wrapper<T> : IWrapper<T>
-{
-    public T Value { get; set; }
-
-    public Wrapper()
+    public interface IReadOnlyWrapper<T>
     {
+        T Get();
     }
 
-    public Wrapper(T value)
+    public interface IWrapper<T> : IReadOnlyWrapper<T>
     {
-        Value = value;
+        T Value { get; set; }
     }
-    
-    public T Get()
+
+    public class Wrapper<T> : IWrapper<T>
     {
-        return Value;
+        public T Value { get; set; }
+
+        public Wrapper()
+        {
+        }
+
+        public Wrapper(T value)
+        {
+            Value = value;
+        }
+
+        public T Get()
+        {
+            return Value;
+        }
     }
 }

@@ -5,26 +5,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityUtilities.ExecutionOrder.ExecutionOrderControl;
 
-namespace ExecutionOrderCompiler
+namespace UnityUtilities.ExecutionOrder
 {
-    class ExecutionOrderCompiler
+    namespace ExecutionOrderCompiler
     {
-        [UnityEditor.Callbacks.DidReloadScripts]
-        private static void LoadScripts()
+        class ExecutionOrderCompiler
         {
-            foreach (MonoScript script in MonoImporter.GetAllRuntimeMonoScripts())
+            [UnityEditor.Callbacks.DidReloadScripts]
+            private static void LoadScripts()
             {
-                Type type = script.GetClass();
-                if (type != null)
+                foreach (MonoScript script in MonoImporter.GetAllRuntimeMonoScripts())
                 {
-                    var attr = Attribute.GetCustomAttribute(type, typeof(ExecutionOrderAttribute)) as ExecutionOrderAttribute;
-                    if(attr != null)
+                    Type type = script.GetClass();
+                    if (type != null)
                     {
-                        int order = attr.order;
-                        if (MonoImporter.GetExecutionOrder(script) != order)
+                        var attr = Attribute.GetCustomAttribute(type, typeof(ExecutionOrderAttribute)) as ExecutionOrderAttribute;
+                        if (attr != null)
                         {
-                            MonoImporter.SetExecutionOrder(script, order);
+                            int order = attr.order;
+                            if (MonoImporter.GetExecutionOrder(script) != order)
+                            {
+                                MonoImporter.SetExecutionOrder(script, order);
+                            }
                         }
                     }
                 }
