@@ -12,31 +12,31 @@ namespace SceneInitializerGenerator
     class SceneInitializerGenerator
     {
         public const string CLASS_TEMPLATE =
-    @"#region Using Statements
+    @"//--------------------------------------AUTO GENERATED CLASS; DON'T TOUCH-----------------------------------------------------------
+#region Using Statements
 using UnityEngine;
-using UnityUtilities.ExecutionOrder.ExecutionOrderControl;
 {0}
 #endregion
 
-[ExecutionOrder(ExecutionOrderValue.Earliest)]
-public class SceneInitializer : MonoBehaviour {{
+namespace UnityUtilities.AutoGen{{
+    public class InitializeScene : MonoBehaviour {{
     
-    #region Fields
-    {1}
-    #endregion
-
-    private void Awake(){{
-        #region Initialization
-        {2}
+        #region Fields
+{1}
         #endregion
+
+        public static void Init(GameObject gameObject){{
+            #region Initialization
+{2}
+            #endregion
+        }}
     }}
 }}
-
 ";
 
         public const string USING_TEMPLATE = "using {0} = {1}.{2};";
-        public const string FIELD_TEMPLATE = "    {0} {1};";
-        public const string INITIALIZE_TEMPLATE = "        {0} = gameObject.AddComponent<{1}>();";
+        public const string FIELD_TEMPLATE = "        //{0} {1};";
+        public const string INITIALIZE_TEMPLATE = "            gameObject.AddComponent<{1}>();";
 
         [UnityEditor.Callbacks.DidReloadScripts]
         private static void LoadScripts()
@@ -84,7 +84,7 @@ public class SceneInitializer : MonoBehaviour {{
                 string.Join("\n", initStatements)
                 );
 
-            string classPath = Path.Combine(Application.dataPath, "UnityUtilities/Scripts/AutoGen/SceneInitializer.cs");
+            string classPath = Path.Combine(Application.dataPath, "UnityUtilities/Scripts/AutoGen/InitializeSceen.cs");
 
             AutoGenClass.Generate(classPath, classCode);
         }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -11,6 +12,7 @@ namespace UnityUtilities
         public static void Generate(string path, string classCode)
         {
             string outFileDir = Path.GetDirectoryName(path);
+            classCode = classCode.Replace("\r\n", "\n").Replace("\n", Environment.NewLine);
 
             if (!File.Exists(path))
             {
