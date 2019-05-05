@@ -12,19 +12,19 @@ public class SceneInitializer : MonoBehaviour
     private static Thunk<Action<GameObject>> Init = new Thunk<Action<GameObject>>(
         () =>
         {
-            foreach(Assembly assem in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (Assembly assem in AppDomain.CurrentDomain.GetAssemblies())
             {
-                Type type = assem.GetType("InitializeScene");
-                if(type != null)
+                Type type = assem.GetType("UnityUtilities.AutoGen.InitializeScene");
+                if (type != null)
                 {
                     var method = type.GetMethod("Init");
-                    if(method != null)
+                    if (method != null)
                     {
                         return (Action<GameObject>)Delegate.CreateDelegate(typeof(Action<GameObject>), method);
                     }
                 }
             }
-            return (x) => { };
+            return (x) => { Debug.LogError("Failed to find auto generated class InitializeSceen.cs"); };
         }
         );
 
