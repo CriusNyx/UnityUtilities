@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityUtilities.ExecutionOrder.ExecutionOrderControl;
+using UnityUtilities.Networking;
 
 namespace UnityUtilities
 {
@@ -19,7 +21,7 @@ namespace UnityUtilities
         Dictionary<Enum, Dictionary<Enum, List<CEventListener>>> eventListeners = new Dictionary<Enum, Dictionary<Enum, List<CEventListener>>>();
 
 #if UNITY_EDITOR
-        Queue<Tuple<Enum, Enum, CEvent>> debug_EventQueue = new Queue<Tuple<Enum, Enum, CEvent>>();
+        Queue<(Enum, Enum, CEvent)> debug_EventQueue = new Queue<(Enum, Enum, CEvent)>();
         public static int maxQueueLength = 500;
 #endif
 
@@ -73,21 +75,43 @@ namespace UnityUtilities
         public static void Broadcast(Enum channel, Enum subchannel, CEvent e)
         {
             if (instance != null)
+            {
                 instance._Broadcast(channel, subchannel, e);
+            }
         }
 
         private void _Broadcast(Enum channel, Enum subchannel, CEvent e)
         {
-            EnsureList(channel, subchannel);
-            foreach (var listener in eventListeners[channel][subchannel])
+            NetworkedCEvent ne = GetNetEvent(e);
+            if (ne != null)
             {
-                listener.AcceptEvent(e);
+                NetworkClient.SendObjectToServerTCP(ne.eventType, new NetworkEventBroadcast(channel, subchannel, ne));
+            }
+            else
+            {
+                EnsureList(channel, subchannel);
+                foreach (var listener in eventListeners[channel][subchannel])
+                {
+                    listener.AcceptEvent(e);
+                }
             }
 #if UNITY_EDITOR
-            debug_EventQueue.Enqueue(new Tuple<Enum, Enum, CEvent>(channel, subchannel, e));
+            debug_EventQueue.Enqueue((channel, subchannel, e));
             while (debug_EventQueue.Count > maxQueueLength)
                 debug_EventQueue.Dequeue();
 #endif
+        }
+
+        private NetworkedCEvent GetNetEvent(CEvent e)
+        {
+            if (e is NetworkedCEvent ne)
+            {
+                if (ne.sendToServer)
+                {
+                    return ne;
+                }
+            }
+            return null;
         }
 
 #if UNITY_EDITOR
@@ -105,7 +129,7 @@ namespace UnityUtilities
             return eventListeners;
         }
 
-        public static IEnumerable<Tuple<Enum, Enum, CEvent>> GetBroadcastList()
+        public static IEnumerable<(Enum, Enum, CEvent)> GetBroadcastList()
         {
             if (instance != null)
             {
@@ -114,7 +138,7 @@ namespace UnityUtilities
             return null;
         }
 
-        private IEnumerable<Tuple<Enum, Enum, CEvent>> _GetBroadcastList()
+        private IEnumerable<(Enum, Enum, CEvent)> _GetBroadcastList()
         {
             return debug_EventQueue;
         }
@@ -136,9 +160,48 @@ namespace UnityUtilities
         player4,
     }
 
+    [Serializable]
     public abstract class CEvent
     {
 
+    }
+
+    [Serializable]
+    public abstract class NetworkedCEvent : CEvent
+    {
+        public bool sendToServer = true;
+        public readonly int networkClientNumber;
+
+        public virtual NetworkControlCode eventType { get; } = NetworkControlCode.runOnClient;
+
+        public NetworkedCEvent()
+        {
+            this.networkClientNumber = NetworkClient.ClientNumber;
+        }
+
+        public override string ToString()
+        {
+            return "sendToServer: " + (sendToServer ? "True " : "False ") + base.ToString();
+        }
+    }
+
+    [Serializable]
+    public class NetworkEventBroadcast
+    {
+        public readonly Enum channel, subchannel;
+        public readonly NetworkedCEvent e;
+
+        public NetworkEventBroadcast(Enum channel, Enum subchannel, NetworkedCEvent e)
+        {
+            this.channel = channel;
+            this.subchannel = subchannel;
+            this.e = e;
+        }
+
+        public override string ToString()
+        {
+            return "NetworkEventBroadcast(" + channel + ", " + subchannel + "," + e.ToString() + ")";
+        }
     }
 
     public interface CEventListener

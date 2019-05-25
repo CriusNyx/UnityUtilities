@@ -30,8 +30,9 @@ namespace UnityUtilities.ExecutionOrder.ExecutionOrderControl
         PostLogic = 1,
         PrePhysics = 9,
         Physics = 10,
-        PhysicsStep = 11,
-        PostPhysics = 12,
+        PrePhysicsStep = 11,
+        PhysicsStep = 12,
+        PostPhysics = 13,
         Camera = 20,
         PostCamera = 21,
     }

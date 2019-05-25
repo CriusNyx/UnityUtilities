@@ -32,7 +32,15 @@ namespace UnityUtilities
                             GUILayout.Label("\t\t" + dic2.Key.ToString());
                             foreach (var listener in dic2.Value)
                             {
-                                GUILayout.Label("\t\t\t" + listener.ToString());
+                                if(listener is MonoBehaviour mono)
+                                {
+                                    GUILayout.Label("\t\t\t" + mono.gameObject.name + "." + listener.ToString());
+                                }
+                                else
+                                {
+                                    GUILayout.Label("\t\t\t" + listener.ToString());
+                                }
+                                
                             }
                         }
                     }

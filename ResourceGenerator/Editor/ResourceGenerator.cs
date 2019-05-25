@@ -73,7 +73,7 @@ namespace UnityUtilities
 
             int index = path.IndexOf("Resources");
             path = path.Substring(index + "Resources".Length);
-            string ident = path.Replace("/", "_").Replace(".", "_").Replace(" ", "_");
+            string ident = path.Replace("/", "_").Replace(".", "_").Replace(" ", "_").Replace("[", "_").Replace("]", "_");
             ident = ident.Trim('_');
             path = path.Trim('/');
 
